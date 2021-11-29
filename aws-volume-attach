@@ -91,11 +91,6 @@ def attach(vol_id, attach_as, client=None):
         sys.exit(3)
 
 
-def check(attach_as):
-    """Resolve attach_as path."""
-    return os.path.exists(attach_as)
-
-
 def already_attached(args):
     """Check if the disk is actually already attached."""
     ec2 = boto3.resource('ec2', region())
@@ -126,7 +121,7 @@ def main(args):
 
     if not args.skip_check:
         counter = 0
-        while not check(args.attach_as):
+        while not already_attached(args):
             counter = counter + 5
             time.sleep(5)
             if counter > 600:
