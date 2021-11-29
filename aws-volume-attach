@@ -100,7 +100,7 @@ def already_attached(args):
         if volume.tags:
             for tag in volume.tags:
                 if tag['Key'] == args.tag and tag['Value'] == args.value:
-                    print('Disk is already attached!')
+                    print('Disk is attached!')
                     sys.exit(0)
 
 
@@ -122,6 +122,7 @@ def main(args):
     if not args.skip_check:
         counter = 0
         while not already_attached(args):
+            print("Checking for disk attachment")
             counter = counter + 5
             time.sleep(5)
             if counter > 600:
