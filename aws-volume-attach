@@ -98,17 +98,21 @@ def already_attached(args):
     """Check if the disk is actually already attached."""
     ec2 = boto3.resource('ec2', region())
     instance = ec2.Instance(instance_id())
+    is_attached = False
     for v in instance.volumes.all():
         volume = ec2.Volume(v.id)
         if volume.tags:
             for tag in volume.tags:
                 if tag['Key'] == args.tag and tag['Value'] == args.value:
-                    print('Disk is attached!')
+                    is_attached = True
 
+    return is_attached
 
 def main(args):
     """Initialize find+attach action."""
-    already_attached(args)
+    if already_attached(args):
+        print('Disk is attached!')
+        sys.exit(0)
 
     client = boto3.client('ec2', region())
     volume_id = None
