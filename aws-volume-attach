@@ -4,7 +4,6 @@
 # 2021-11-28: Patched by github.com/zph to work with Python3
 # NOTES:
 # - fails gracelessly if disk mount had to be forcefully detached.
-# - Use logger not print statements
 """Retrieve available EBS volume in AZ."""
 
 import sys
@@ -13,6 +12,8 @@ import boto3
 import argparse
 import time
 import urllib3
+import logging
+logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%Y/%m/%dT%H:%M:%SZ')
 
 
 def parse_args():
@@ -73,7 +74,7 @@ def find(tag, val, client=None):
                 if x['State'] == 'available':
                     return x
     except(Exception, e):
-        print(e)
+        logging.error(e)
         sys.exit(2)
 
 
@@ -90,7 +91,7 @@ def attach(vol_id, attach_as, client=None):
             InstanceId=instance_id(),
             Device=attach_as)
     except(Exception, e):
-        print(e)
+        logging.error(e)
         sys.exit(3)
 
 
@@ -111,7 +112,7 @@ def already_attached(args):
 def main(args):
     """Initialize find+attach action."""
     if already_attached(args):
-        print('Disk is attached!')
+        logging.info('Disk is already attached, exiting.')
         sys.exit(0)
 
     client = boto3.client('ec2', region())
@@ -128,7 +129,7 @@ def main(args):
 
     if not args.skip_check:
         counter = 0
-        print("Checking for disk attachment")
+        logging.info("Checking for disk attachment")
         while not already_attached(args):
             counter = counter + 5
             time.sleep(5)
@@ -136,7 +137,7 @@ def main(args):
                 raise Exception('Timeout waiting for attachment')
                 sys.exit(2)
 
-    print("Attachment complete")
+    logging.info("Attachment complete")
 
 if __name__ == "__main__":
     main(parse_args())
