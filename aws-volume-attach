@@ -101,7 +101,6 @@ def already_attached(args):
             for tag in volume.tags:
                 if tag['Key'] == args.tag and tag['Value'] == args.value:
                     print('Disk is attached!')
-                    sys.exit(0)
 
 
 def main(args):
@@ -117,19 +116,20 @@ def main(args):
             volume_waiter = client.get_waiter('volume_available')
             volume_waiter.wait(VolumeIds=[volume_id])
 
+    print(f"Attaching {volume_id} at {args.attach_as}".)
     attach(volume_id, args.attach_as, client)
 
     if not args.skip_check:
         counter = 0
+        print("Checking for disk attachment")
         while not already_attached(args):
-            print("Checking for disk attachment")
             counter = counter + 5
             time.sleep(5)
             if counter > 600:
                 raise Exception('Timeout waiting for attachment')
                 sys.exit(2)
-    sys.exit(0)
 
+    print("Attachment complete")
 
 if __name__ == "__main__":
     main(parse_args())
