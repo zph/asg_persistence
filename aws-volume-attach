@@ -129,7 +129,7 @@ def main(args):
         while not check(args.attach_as):
             counter = counter + 5
             time.sleep(5)
-            if counter > 60:
+            if counter > 600:
                 raise Exception('Timeout waiting for attachment')
                 sys.exit(2)
     sys.exit(0)
