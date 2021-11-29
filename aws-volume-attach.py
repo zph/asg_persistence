@@ -1,11 +1,15 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+# Credit: https://raw.githubusercontent.com/dizzythinks/asg_persistence/12ec0550534adf7531d7837c87672df400519df5/attach_volume.py
+# Revisions:
+# 2021-11-28: Patched by github.com/zph to work with Python3
 """Retrieve available EBS volume in AZ."""
+
 import sys
 import os
 import boto3
 import argparse
 import time
-import urllib2
+import urllib3
 
 
 def parse_args():
@@ -26,7 +30,7 @@ def parse_args():
 
 def utils(endpoint):
     """Replacing boto.utils, read from instance metadata directly."""
-    return urllib2.urlopen(
+    return urllib3.urlopen(
         'http://169.254.169.254/latest/meta-data/%s' % endpoint
     ).read()
 
@@ -62,7 +66,7 @@ def find(tag, val, client=None):
             if x['AvailabilityZone'] == zone():
                 if x['State'] == 'available':
                     return x
-    except Exception, e:
+    except(Exception, e):
         print(e)
         sys.exit(2)
 
@@ -79,7 +83,7 @@ def attach(vol_id, attach_as, client=None):
             VolumeId=vol_id,
             InstanceId=instance_id(),
             Device=attach_as)
-    except Exception, e:
+    except(Exception, e):
         print(e)
         sys.exit(3)
 
