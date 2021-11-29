@@ -2,6 +2,9 @@
 # Credit: https://raw.githubusercontent.com/dizzythinks/asg_persistence/12ec0550534adf7531d7837c87672df400519df5/attach_volume.py
 # Revisions:
 # 2021-11-28: Patched by github.com/zph to work with Python3
+# NOTES:
+# - fails gracelessly if disk mount had to be forcefully detached.
+# - Use logger not print statements
 """Retrieve available EBS volume in AZ."""
 
 import sys
@@ -116,7 +119,7 @@ def main(args):
             volume_waiter = client.get_waiter('volume_available')
             volume_waiter.wait(VolumeIds=[volume_id])
 
-    print(f"Attaching {volume_id} at {args.attach_as}".)
+    print(f"Attaching {volume_id} at {args.attach_as}")
     attach(volume_id, args.attach_as, client)
 
     if not args.skip_check:
